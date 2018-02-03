@@ -115,6 +115,7 @@
       # update_cache=yes
       # install-recommends=no
       state: present
+      use: yum
     with_items:
       - bzip2
       - dkms
