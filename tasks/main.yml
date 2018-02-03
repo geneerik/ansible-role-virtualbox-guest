@@ -89,6 +89,11 @@
     shell: uname -r | sed 's/-[az].*$//'
     register: kernel_common
     changed_when: kernel_common.stdout == ""
+    
+  - name: Find out kernel architecture
+    shell: uname -m
+    register: kernel_arch
+    changed_when: kernel_arch.stdout == ""
 
   - name: Save the current list of packages for Debians
     shell: dpkg-query -l > /tmp/before.txt
@@ -138,7 +143,7 @@
       update_cache: yes
     with_items:
       - kernel
-      - kernel-headers-{{ kernel.stdout }}
+      - kernel-headers.{{ kernel_arch.stdout }}
       - kernel-devel
     when: kernel is defined and ansible_os_family == 'RedHat' and kernel.stdout is defined 
 
