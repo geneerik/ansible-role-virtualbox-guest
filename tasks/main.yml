@@ -143,6 +143,7 @@
       update_cache: yes
     with_items:
       - kernel
+      # not 100% right,but if the kernel was upgraded, finding the right new version is hard; this package installs the other
       - kernel-headers.{{ kernel_arch.stdout }}
       - kernel-devel
     when: kernel is defined and ansible_os_family == 'RedHat' and kernel.stdout is defined 
@@ -193,19 +194,24 @@
       #purge=yes
     when: installed is defined and (virtualbox_keep is undefined or not virtualbox_keep)
 
-  - name: Remove build logfiles, artefacts and ISO files
+  - name: Remove before and after package list
+    file: name:{{ item }} follow=yes state=absent
+    with_itmes:
+      - /tmp/before.txt
+      - /tmp/after.txt
+
+  - name: Remove build logfiles, artifacts and ISO files
     file: name={{ item}} follow=yes state=absent
     with_items:
       - "/opt/VBoxGuestAdditions-{{ virtualbox_version }}/src"
       - /root/VBoxGuestAdditions.iso
-      - /tmp/before.txt
-      - /tmp/after.txt
       - "/usr/src/vboxguest-{{ virtualbox_version }}"
       - /var/lib/dkms/vboxguest
       - /var/log/vboxadd-install.log
       - /var/log/vboxadd-install-x11.log
       - /var/log/VBoxGuestAdditions.log
       - /var/log/VBoxGuestAdditions-uninstall.log
+    when: virtualbox_keep is undefined or not virtualbox_keep
 
   - name: Remove cdrom fstab entry
     lineinfile: >
