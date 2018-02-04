@@ -195,8 +195,8 @@
     when: installed is defined and (virtualbox_keep is undefined or not virtualbox_keep)
 
   - name: Remove before and after package list
-    file: name:{{ item }} follow=yes state=absent
-    with_itmes:
+    file: name={{ item}} follow=yes state=absent
+    with_items:
       - /tmp/before.txt
       - /tmp/after.txt
 
